@@ -10,3 +10,7 @@ The idea is first published in the paper https://arxiv.org/pdf/1703.01008.pdf En
 
 ## Milestone
 ### Create the project
+* decide the first version of project structure (psv1)
+* fetch all the required data and redesign the data structure if needed
+
+
