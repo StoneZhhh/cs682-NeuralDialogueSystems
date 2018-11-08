@@ -35,11 +35,16 @@ The idea is first published in the paper https://arxiv.org/pdf/1703.01008.pdf En
     * Dialogue Management (DM) module processes the IOB format slots and predicted intention got in LU module. DM module includes two stages.
          * Given slots and their corresponding values, we cast some unknown magic to get a state (of our dialogue system)
          * Do policy improvement using current system state mentioned above, user actions based on slots (e.g., `request(moviename; genre=action; date=this weekend))`)  and system action based on intention (e.g., `request(location)`, which is equal to find_movie given movie name and time). Have no clear idea now how to do this policy improvement with two actions. Only have experience with (s, a) style reinforcement learning. Since P and R are unknown, TD or Monte Carlo approach seem to work. Another thing for policy improvement, We have a predefined policy in `dia_act_nl_pairs.v6.json`, which may be helpful as an initial policy.
+    * User agent model processes a Markov-like decision process. In each time $t$, the model has a state $s_t$, containing the agent action $Am_t$, constraints $C_t$ and request $R_t$, that is  to say $s_t = (Am_t, C_t, R_t)$. It updates the state to $s_{t+1}$ using $s_t$ and the user action at time $t$ ($au_{t}$). The difference between our user agent model and traditional MDP is that it contains multi-action roles, we try to modify this to a traditional one by adding the user agent action into the environment.
+    * Natural Language Generation (NLG) module generates natural language texts given the users' action. We first limit our NLG to template-based NLG only. The generating process is that the module takes the users's action as the input and generates test structure like 'I think you can see \<movie-name\> at \<cinema-name\>', using slots to represent concrete information need to be filled in. This can be done by using LSTM decoder. Then a post-processing scan is performed to replace the slot placeholders with their actual values.
+  
   
 * Fetch all the required data and redesign the data structure if needed.
-    * `dia_acts.txt` describes the types of actions our dialogue system can respond, including request, inform, confirm_question and so on.
+    * `dia_acts.txt` describes the types of actions our dialogue system can respond, including request, inform, confirm_question and so on _Called in User Agent module and NLG module_.
     * `slot_set.txt` describes all the supported slots. _Called in LU module_.
-    * `dia_act_nl_pairs.v6.json` describes some predefined rules about how NLG model generate dialogues. Can we get rid of this stupid limits and create an engine that generate dialogue with only some hyper parameters? _Called in DM module_.
+    * `dia_act_nl_pairs.v6.json` describes some predefined rules about how NLG model generate dialogues. Can we get rid of this stupid limits and create an engine that generate dialogue with only some hyper parameters? _Called in DM module and NLG module_.
+
+* Start coding!
 
 
 
