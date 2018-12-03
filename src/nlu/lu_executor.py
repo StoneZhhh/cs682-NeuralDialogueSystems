@@ -32,4 +32,12 @@ def train_lstm(sentence, slots, model):
     lunet.save_checkpoint(lstm_model, lstm_solver, '../../../data/nn/lstm.pth.tar')
 
 
+def call_lstm(sentence, model):
+    processed_s = gensim.utils.simple_preprocess(sentence)
+    tokenizer = Tokenizer()
+    tokenizer.load_gensim_model(model)
+    sentence_vec = tokenizer.sentence2vecs(processed_s)
+
+    return model(sentence_vec)
+
 
