@@ -72,6 +72,6 @@ class Tokenizer:
 
 
 # generate models for testing
-tokenizer = Tokenizer()
-tokenizer.gensim_brown_train()
-tokenizer.save_gensim_model('../../../data/word2vec/brown')
+# tokenizer = Tokenizer()
+# tokenizer.gensim_brown_train()
+# tokenizer.save_gensim_model('../../../data/word2vec/brown')
