@@ -5,8 +5,10 @@ import logging
 import gensim
 from gensim.models import Word2Vec
 
+from nltk.corpus import brown
 
-logging.basicConfig(format=' % (asctime)s: % (levelname)s: % (message)s', level = logging.INFO)
+
+# logging.basicConfig(format=' % (asctime)s: % (levelname)s: % (message)s', level=logging.INFO)
 
 
 class Tokenizer:
@@ -29,8 +31,8 @@ class Tokenizer:
     def gensim_load_corpus(self, filepath):
         with gzip.open(filepath, 'rb') as f:
             for i, line in enumerate(f):
-                if i % 10000 == 0:
-                    logging.info("read {0} reviews".format(i))
+                # if i % 10000 == 0:
+                #     logging.info("read {0} reviews".format(i))
                 self.tokenized_sentences.append(gensim.utils.simple_preprocess(line))
 
     # train the model using the tokenized sentences in memory
@@ -38,8 +40,8 @@ class Tokenizer:
         self.gensim_model = Word2Vec(self.tokenized_sentences, size=self.size, window=5, min_count=1, workers=4)
 
     # train the model using Brown U data
-    def gensim_brown_train(self, dirname):
-        gensim.models.word2vec.BrownCorpus(dirname)
+    def gensim_brown_train(self):
+        self.gensim_model = Word2Vec(brown.sents(), min_count=1)
 
     # delete the pretrained model:
     def clean_gensim_model(self):
@@ -67,3 +69,9 @@ class Tokenizer:
         for i in range(len(sentence)):
             vec[i, :] = self.word2vec(sentence[i])
         return vec  # (len(sentence), self.size)
+
+
+# generate models for testing
+tokenizer = Tokenizer()
+tokenizer.gensim_brown_train()
+tokenizer.save_gensim_model('../../../data/word2vec/brown')
