@@ -1,5 +1,5 @@
 import nlu.lu_torch_net as lunet
-from models.wordvector.tokenizer import Tokenizer
+from models.wordvector.word_tokenizer import Tokenizer
 
 import torch
 import torch.nn as nn

@@ -13,7 +13,7 @@ import numpy as np
 # 10 layers lstm network
 def lstm_net():
     model = nn.Sequential(
-        nn.LSTM(100, 10, num_layers=10),
+        nn.LSTM(100, 10, num_layers=10)
     )
 
     return model

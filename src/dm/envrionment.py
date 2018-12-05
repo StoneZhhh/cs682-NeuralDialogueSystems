@@ -3,13 +3,14 @@ import numpy as np
 
 
 class DMSystem:
-    def __init__(self, intention_path='../../../data/intention/default_intention.json'):
+    def __init__(self, s0, intention_path='../../../data/intention/default_intention.json'):
         self.actios = fl.load_as_list(intention_path)
+        self.initial_state = s0
         self.ternimal_state = []
         # self.states =
 
     def d_zero(self):
-        return 0
+        return self.initial_state
 
     def dynamics(self):
         pass
