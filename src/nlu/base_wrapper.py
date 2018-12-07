@@ -1,10 +1,15 @@
+import time, os
+from tools.utils import *
+import numpy as np
+
+
 class BaseWrapper:
     def __init__(self, input_size, hidden_size, output_size):
         pass
 
     def get_struct(self):
         return {'model': self.model, 'update': self.update, 'regularize': self.regularize}
-    
+
     """ Forward Function"""
 
     def fwdPass(self, Xs, params, **kwargs):
@@ -33,7 +38,7 @@ class BaseWrapper:
     def batchBackward(self, dY, cache):
         caches = cache['caches']
         grads = {}
-        for i in xrange(len(caches)):
+        for i in range(len(caches)):
             single_cache = caches[i]
             local_grads = self.bwdPass(dY[i], single_cache)
             mergeDicts(grads, local_grads)  # add up the gradients wrt model parameters
