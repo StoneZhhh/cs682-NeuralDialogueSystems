@@ -22,6 +22,8 @@ def read_from_pickle(path):
     return data
 
 
+# data = read_from_pickle('../../data/dicts.v3.p')
+# print(data)
 # data = read_from_pickle('../../data/movie_kb.1k.p')
 # print(list(data[1].values()))
 # print(list(data[1].keys()))

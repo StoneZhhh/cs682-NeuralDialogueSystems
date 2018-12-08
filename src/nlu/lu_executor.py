@@ -1,5 +1,8 @@
+import copy
+
 import nlu.lu_torch_net as lunet
 from models.wordvector.word_tokenizer import Tokenizer
+import tools.file_loader as fl
 
 import torch
 import torch.nn as nn
@@ -7,37 +10,55 @@ from torch.nn import MSELoss
 
 import numpy as np
 import gensim
+import pickle
 
 
 # remember our multi-layer lstm works like: given an input with shape (N, T, D), it gives a result of shape (N, T, H)
 # as the input of the next layer.
 # local h matrix is handled in pytorch so we do not need to care about
-def train_lstm(sentence, slots, model):
-    processed_s = gensim.utils.simple_preprocess(sentence)
-    tokenizer = Tokenizer()
-    tokenizer.load_gensim_model(model)
-    sentence_vec = tokenizer.sentence2vecs(processed_s)
-    print(sentence_vec.shape)
 
-    lstm_model = lunet.lstm_net()
-    outputs, hidden = lstm_model(sentence_vec)
-    lstm_solver = lunet.get_adam_optimizer(lstm_model)
+movie_corpus = fl.read_from_pickle('../../data/movie_kb.1k.p')
+t = Tokenizer()
+t.load_gensim_model('../../data/word2vec/brown.model')
+sentence_vec = t.sentence2vecs(list(movie_corpus[0].values()))
+print(sentence_vec)
+print(sentence_vec.shape)
 
-    lstm_model.forward(sentence_vec)
-    mse_loss = MSELoss(outputs, slots)
-
-    mse_loss.backward()
-    lstm_solver.step()
-
-    lunet.save_checkpoint(lstm_model, lstm_solver, '../../../data/nn/lstm.pth.tar')
+# to-do: train the word2vec model using dict.v3.p and make sure we can get a meaningful output
 
 
-def call_lstm(sentence, model):
-    processed_s = gensim.utils.simple_preprocess(sentence)
-    tokenizer = Tokenizer()
-    tokenizer.load_gensim_model(model)
-    sentence_vec = tokenizer.sentence2vecs(processed_s)
+class NLU:
+    def __init__(self, filepath):
+        """
+        :param filepath:
+        Load the params from model file. Require model class to store all the content
+        about word_dict, slot_dict and so on
+        """
 
-    return model(sentence_vec)
+        model_params = pickle.load(open(filepath, 'rb'))
 
+        self.word_dict = copy.deepcopy(model_params['word_dict'])
+        self.slot_dict = copy.deepcopy(model_params['slot_dict'])
+        self.act_dict = copy.deepcopy(model_params['act_dict'])
+        self.tag_set = copy.deepcopy(model_params['tag_set'])
+        self.params = copy.deepcopy(model_params['params'])
+        self.inverse_tag_dict = {self.tag_set[k]: k for k in self.tag_set.keys()}
 
+    def generate_dia_act(self, annotation):
+        if len(annotation) == 0:
+            pass
+        p_annot = annotation.strip('.').strip('?').strip(',').strip('!')
+
+    def parse_str_to_vector(self, string):
+        tmp = 'BOS ' + string + ' EOS'
+        words = tmp.lower().split(' ')
+
+        vecs = np.zeros((len(words), len(self.word_dict)))
+        for w_index, w in enumerate(words):
+            if w.endswith(',') or w.endswith('?'): w = w[0:-1]
+            if w in self.word_dict.keys():
+                vecs[w_index][self.word_dict[w]] = 1
+            else:
+                vecs[w_index][self.word_dict['unk']] = 1
+        rep = {'word_vectors': vecs, 'raw_seq': string}
+        return rep

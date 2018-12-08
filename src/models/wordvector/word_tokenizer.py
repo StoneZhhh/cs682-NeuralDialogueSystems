@@ -12,7 +12,7 @@ from nltk.corpus import brown
 
 
 class Tokenizer:
-    def __init__(self, size=10):
+    def __init__(self, size=100):
         ###########################################################
         # definition of tokenized_sentences:                      #
         # a list of tokenized_sentences.                          #
